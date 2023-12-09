@@ -7,4 +7,8 @@ export class SecurityService {
     const hash = crypto.createHash('MD5');
     return hash.update(password).digest('hex');
   }
+
+  async comparePasswords(plainPassword: string, hashedPassword: string) {
+    return (await this.hashPassword(plainPassword)) === hashedPassword;
+  }
 }
