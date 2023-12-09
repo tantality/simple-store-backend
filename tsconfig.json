@@ -22,6 +22,7 @@
       "app/*": ["./src/app/*"],
       "libs/*": ["./src/libs/*"],
       "domain/*": ["./src/domain/*"],
+      "enums/*": ["./src/enums/*"]
     }
   }
 }
