@@ -20,6 +20,19 @@ export class AuthService {
     });
   }
 
+  async findUserByNormalizedEmailAndPassword(
+    user: Pick<User, 'normalizedEmail' | 'password'>,
+  ) {
+    const hashedPassword = await this.securityService.hashPassword(
+      user.password,
+    );
+
+    return this.usersRepo.findOneByNormalizedEmailAndPassword(
+      user.normalizedEmail,
+      hashedPassword,
+    );
+  }
+
   async makeNewUser(
     formWithNormalizedEmail: SignUpForm & Pick<User, 'normalizedEmail'>,
   ) {

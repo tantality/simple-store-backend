@@ -14,6 +14,15 @@ export class UsersRepo {
     });
   }
 
+  async findOneByNormalizedEmailAndPassword(
+    normalizedEmail: string,
+    password: string,
+  ) {
+    return await this.prisma.user.findUnique({
+      where: { normalizedEmail, password },
+    });
+  }
+
   async createOne(
     user: Pick<User, 'roleId' | 'email' | 'normalizedEmail' | 'password'>,
   ) {
