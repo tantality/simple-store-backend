@@ -10,7 +10,7 @@ export class AuthDto {
   @IsString()
   refreshToken: string;
 
-  from(dto: AuthDto) {
+  static from(dto: AuthDto) {
     if (!dto) {
       return;
     }
