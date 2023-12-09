@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User, RoleTypes } from '@prisma/client';
+import { UserSessionDto } from 'domain/dto/user-session.dto';
 import { RolesRepo } from 'domain/repos/roles.repo';
 import { UsersRepo } from 'domain/repos/users.repo';
 import { SecurityService } from 'libs/security/security.service';
@@ -39,5 +40,9 @@ export class AuthService {
     });
 
     return user;
+  }
+
+  generateTokens(payload: UserSessionDto) {
+    return this.securityService.generateTokens(payload);
   }
 }
