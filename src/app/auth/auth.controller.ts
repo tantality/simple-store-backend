@@ -23,6 +23,7 @@ import {
 } from 'libs/security/constants/security.constants';
 import { CurrentUser } from 'libs/security/decorators/current-user.decorator';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
+import { SkipAccessTokenCheck } from 'libs/security/decorators/skip-access-token-check.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -34,6 +35,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
+  @SkipAccessTokenCheck()
   async signup(
     @Body() body: SignUpForm,
     @Res({ passthrough: true }) res: Response,
@@ -70,6 +72,7 @@ export class AuthController {
   }
 
   @Post('/signin')
+  @SkipAccessTokenCheck()
   async signin(
     @Body() body: SignInForm,
     @Res({ passthrough: true }) res: Response,
