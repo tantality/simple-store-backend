@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
+import { EnvConfigService } from 'libs/env-config/env-config.service';
 import {
   ACCESS_TOKEN_LIFETIME_IN_MS,
   REFRESH_TOKEN_LIFETIME_IN_MS,
@@ -8,8 +10,11 @@ import {
 
 @Injectable()
 export class SecurityService {
-  envConfigService: any;
-  jwtService: any;
+  constructor(
+    private jwtService: JwtService,
+    private envConfigService: EnvConfigService,
+  ) {}
+
   async hashPassword(password: string) {
     const hash = crypto.createHash('MD5');
     return hash.update(password).digest('hex');
