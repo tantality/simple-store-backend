@@ -30,4 +30,11 @@ export class UsersRepo {
       data: { ...user },
     });
   }
+
+  async setRefreshToken(id: string, refreshToken: string) {
+    return await this.prisma.user.update({
+      where: { id },
+      data: { refreshToken },
+    });
+  }
 }

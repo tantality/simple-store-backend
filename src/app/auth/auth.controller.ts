@@ -38,6 +38,7 @@ export class AuthController {
 
     const payload = { id: newUser.id, roleId: newUser.roleId };
     const tokens = this.authService.generateTokens(payload);
+    await this.authService.setRefreshToken(payload.id, tokens.refreshToken);
 
     return AuthDto.from({ ...tokens, id: payload.id });
   }
@@ -56,6 +57,7 @@ export class AuthController {
 
     const payload = { id: user.id, roleId: user.roleId };
     const tokens = this.authService.generateTokens(payload);
+    await this.authService.setRefreshToken(payload.id, tokens.refreshToken);
 
     return AuthDto.from({ ...tokens, id: payload.id });
   }

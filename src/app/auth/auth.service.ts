@@ -58,4 +58,8 @@ export class AuthService {
   generateTokens(payload: UserSessionDto) {
     return this.securityService.generateTokens(payload);
   }
+
+  async setRefreshToken(userId: string, token: string) {
+    return await this.usersRepo.setRefreshToken(userId, token);
+  }
 }
