@@ -66,4 +66,11 @@ export class AuthService {
   async signout(userId: string) {
     return await this.usersRepo.deleteRefreshToken(userId);
   }
+
+  async refreshTokens(payload: UserSessionDto) {
+    const tokens = this.securityService.generateTokens(payload);
+    await this.usersRepo.setRefreshToken(payload.id, tokens.refreshToken);
+
+    return tokens;
+  }
 }

@@ -9,6 +9,7 @@ import {
   NotFoundException,
   Post,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { CookieOptions, Response } from 'express';
 import { AuthDto } from 'domain/dto/auth.dto';
@@ -24,6 +25,7 @@ import {
 import { CurrentUser } from 'libs/security/decorators/current-user.decorator';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
 import { SkipAccessTokenCheck } from 'libs/security/decorators/skip-access-token-check.decorator';
+import { RefreshTokenGuard } from 'libs/security/guards/refresh-token.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -109,5 +111,22 @@ export class AuthController {
   ) {
     await this.authService.signout(user.id);
     res.clearCookie(CookieName.RefreshToken);
+  }
+
+  @Post('refresh-tokens')
+  @UseGuards(RefreshTokenGuard)
+  @SkipAccessTokenCheck()
+  async refreshTokens(
+    @CurrentUser() user: UserSessionDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const tokens = await this.authService.refreshTokens(user);
+    res.cookie(
+      CookieName.RefreshToken,
+      tokens.refreshToken,
+      this.COOKIE_OPTIONS,
+    );
+
+    return AuthDto.from({ id: user.id, ...tokens });
   }
 }

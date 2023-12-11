@@ -32,7 +32,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     const token = req.cookies[CookieName.RefreshToken] as string;
     const payload = this.securityService.verifyRefreshToken(token);
 
-    const user = await this.usersRepo.findOneById(token);
+    const user = await this.usersRepo.findOneById(payload.id);
 
     if (!user || !user.refreshToken) {
       throw new UnauthorizedException();
