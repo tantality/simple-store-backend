@@ -5,20 +5,32 @@ import {
   InternalServerErrorException,
   NotFoundException,
   Post,
+  Res,
 } from '@nestjs/common';
+import { CookieOptions, Response } from 'express';
 import { AuthDto } from 'domain/dto/auth.dto';
 import { ErrorMessage } from 'enums/error-message.enum';
 import normalize from 'normalize-email';
 import { AuthService } from './auth.service';
 import { SignInForm } from './domain/signin.form';
 import { SignUpForm } from './domain/signup.form';
+import { REFRESH_TOKEN_LIFETIME_IN_MS } from 'libs/security/constants/security.constants';
 
 @Controller('auth')
 export class AuthController {
+  REFRESH_TOKEN_COOKIE = 'refreshToken';
+  COOKIE_OPTIONS: CookieOptions = {
+    maxAge: REFRESH_TOKEN_LIFETIME_IN_MS,
+    httpOnly: true,
+  };
+
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  async signup(@Body() body: SignUpForm) {
+  async signup(
+    @Body() body: SignUpForm,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const normalizedEmail = normalize(body.email);
     const user =
       await this.authService.findUserByNormalizedEmail(normalizedEmail);
@@ -38,13 +50,23 @@ export class AuthController {
 
     const payload = { id: newUser.id, roleId: newUser.roleId };
     const tokens = this.authService.generateTokens(payload);
+
     await this.authService.setRefreshToken(payload.id, tokens.refreshToken);
+
+    res.cookie(
+      this.REFRESH_TOKEN_COOKIE,
+      tokens.refreshToken,
+      this.COOKIE_OPTIONS,
+    );
 
     return AuthDto.from({ ...tokens, id: payload.id });
   }
 
   @Post('/signin')
-  async signin(@Body() body: SignInForm) {
+  async signin(
+    @Body() body: SignInForm,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const normalizedEmail = normalize(body.email);
     const user = await this.authService.findUserByNormalizedEmailAndPassword({
       normalizedEmail,
@@ -57,7 +79,14 @@ export class AuthController {
 
     const payload = { id: user.id, roleId: user.roleId };
     const tokens = this.authService.generateTokens(payload);
+
     await this.authService.setRefreshToken(payload.id, tokens.refreshToken);
+
+    res.cookie(
+      this.REFRESH_TOKEN_COOKIE,
+      tokens.refreshToken,
+      this.COOKIE_OPTIONS,
+    );
 
     return AuthDto.from({ ...tokens, id: payload.id });
   }
