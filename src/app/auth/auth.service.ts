@@ -62,4 +62,8 @@ export class AuthService {
   async setRefreshToken(userId: string, token: string) {
     return await this.usersRepo.setRefreshToken(userId, token);
   }
+
+  async signout(userId: string) {
+    return await this.usersRepo.deleteRefreshToken(userId);
+  }
 }

@@ -37,4 +37,13 @@ export class UsersRepo {
       data: { refreshToken },
     });
   }
+
+  async deleteRefreshToken(userId: string) {
+    return await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        refreshToken: null,
+      },
+    });
+  }
 }

@@ -2,6 +2,9 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
   InternalServerErrorException,
   NotFoundException,
   Post,
@@ -14,11 +17,15 @@ import normalize from 'normalize-email';
 import { AuthService } from './auth.service';
 import { SignInForm } from './domain/signin.form';
 import { SignUpForm } from './domain/signup.form';
-import { REFRESH_TOKEN_LIFETIME_IN_MS } from 'libs/security/constants/security.constants';
+import {
+  CookieName,
+  REFRESH_TOKEN_LIFETIME_IN_MS,
+} from 'libs/security/constants/security.constants';
+import { CurrentUser } from 'libs/security/decorators/current-user.decorator';
+import { UserSessionDto } from 'domain/dto/user-session.dto';
 
 @Controller('auth')
 export class AuthController {
-  REFRESH_TOKEN_COOKIE = 'refreshToken';
   COOKIE_OPTIONS: CookieOptions = {
     maxAge: REFRESH_TOKEN_LIFETIME_IN_MS,
     httpOnly: true,
@@ -54,7 +61,7 @@ export class AuthController {
     await this.authService.setRefreshToken(payload.id, tokens.refreshToken);
 
     res.cookie(
-      this.REFRESH_TOKEN_COOKIE,
+      CookieName.RefreshToken,
       tokens.refreshToken,
       this.COOKIE_OPTIONS,
     );
@@ -83,11 +90,21 @@ export class AuthController {
     await this.authService.setRefreshToken(payload.id, tokens.refreshToken);
 
     res.cookie(
-      this.REFRESH_TOKEN_COOKIE,
+      CookieName.RefreshToken,
       tokens.refreshToken,
       this.COOKIE_OPTIONS,
     );
 
     return AuthDto.from({ ...tokens, id: payload.id });
+  }
+
+  @Get('signout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async signout(
+    @CurrentUser() user: UserSessionDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    await this.authService.signout(user.id);
+    res.clearCookie(CookieName.RefreshToken);
   }
 }
