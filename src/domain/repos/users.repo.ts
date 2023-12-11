@@ -6,6 +6,12 @@ import { PrismaService } from 'libs/prisma/prisma.service';
 export class UsersRepo {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findOneById(id: string) {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
+  }
+
   async findOneByNormalizedEmail({
     normalizedEmail,
   }: Pick<User, 'normalizedEmail'>) {

@@ -39,4 +39,14 @@ export class SecurityService {
 
     return { accessToken, refreshToken };
   }
+
+  verifyRefreshToken(token: string) {
+    const options = {
+      secret: this.envConfigService.getJwtRefreshTokenSecret(),
+    };
+
+    const payload = this.jwtService.verify<UserSessionDto>(token, options);
+
+    return payload;
+  }
 }
