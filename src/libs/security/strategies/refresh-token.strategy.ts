@@ -30,9 +30,11 @@ export class RefreshTokenStrategy extends PassportStrategy(
 
   async validate(@Req() req: Request): Promise<UserSessionDto> {
     const token = req.cookies[CookieName.RefreshToken] as string;
-    const payload = this.securityService.verifyRefreshToken(token);
+    const dto = UserSessionDto.fromPayload(
+      this.securityService.verifyRefreshToken(token),
+    );
 
-    const user = await this.usersRepo.findOneById(payload.id);
+    const user = await this.usersRepo.findOneById(dto.id);
 
     if (!user || !user.refreshToken) {
       throw new UnauthorizedException();
@@ -44,7 +46,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
       throw new UnauthorizedException();
     }
 
-    return payload;
+    return dto;
   }
 }
 
