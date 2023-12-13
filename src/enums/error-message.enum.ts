@@ -7,4 +7,5 @@ export enum ErrorMessage {
   RecordUpdationFailed = 'Failed to update the record',
   RecordDeletionFailed = 'Failed to delete the record',
   RecordNotExists = "Record doesn't exist",
+  BadRefreshToken = 'Bad refresh token',
 }

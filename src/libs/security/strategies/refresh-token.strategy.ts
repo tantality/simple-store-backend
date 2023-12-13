@@ -2,6 +2,7 @@ import { Injectable, Req, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
 import { UsersRepo } from 'domain/repos/users.repo';
+import { ErrorMessage } from 'enums/error-message.enum';
 import { Request } from 'express';
 import { EnvConfigService } from 'libs/env-config/env-config.service';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -37,13 +38,13 @@ export class RefreshTokenStrategy extends PassportStrategy(
     const user = await this.usersRepo.findOneById(dto.id);
 
     if (!user || !user.refreshToken) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(ErrorMessage.BadRefreshToken);
     }
 
     const areTokensEqual = user.refreshToken === token;
 
     if (!areTokensEqual) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(ErrorMessage.BadRefreshToken);
     }
 
     return dto;
@@ -54,7 +55,7 @@ const extractRefreshTokenFromCookie = (req: Request): string => {
   const refreshToken = req.cookies[CookieName.RefreshToken];
 
   if (!refreshToken) {
-    throw new UnauthorizedException();
+    throw new UnauthorizedException(ErrorMessage.BadRefreshToken);
   }
 
   return refreshToken;
