@@ -93,7 +93,7 @@ model Order {
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
 
   status     OrderStatus @default(InCart)
-  totalPrice Int         @map("total_price")
+  totalPrice Int         @default(0) @map("total_price")
 
   items  OrderItem[]
   user   User        @relation(fields: [userId], references: [id])
