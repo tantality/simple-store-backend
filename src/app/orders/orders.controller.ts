@@ -1,7 +1,57 @@
-import { Controller } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  NotFoundException,
+} from '@nestjs/common';
+import { Body, Post } from '@nestjs/common/decorators';
+import { OrderStatus } from '@prisma/client';
+import { UserSessionDto } from 'domain/dto/user-session.dto';
+import { ErrorMessage } from 'enums/error-message.enum';
+import { CurrentUser } from 'libs/security/decorators/current-user.decorator';
+import { CreateOrderForm } from './domain/create-order.form';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
+
+  @Post()
+  async createOrder(
+    @CurrentUser() user: UserSessionDto,
+    @Body() body: CreateOrderForm,
+  ) {
+    const productEntity = await this.ordersService.findProductById(
+      body.productId,
+    );
+
+    if (!productEntity) {
+      throw new NotFoundException(ErrorMessage.RecordNotExists);
+    }
+
+    const orderEntity = await this.ordersService.findOrderByStatusAndUserId(
+      OrderStatus.InCart,
+      user.id,
+    );
+
+    if (orderEntity) {
+      throw new BadRequestException(ErrorMessage.RecordAlreadyExist);
+    }
+
+    const orderItem = {
+      productId: body.productId,
+      quantity: 2,
+      price: productEntity.price,
+    };
+
+    const createdOrderEntity = await this.ordersService.createOrder(
+      user.id,
+      orderItem,
+    );
+
+    if (!createdOrderEntity) {
+      throw new BadRequestException(ErrorMessage.RecordCreationFailed);
+    }
+
+    return createdOrderEntity;
+  }
 }
