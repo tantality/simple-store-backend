@@ -21,24 +21,19 @@ export class OrdersController {
     @CurrentUser() user: UserSessionDto,
     @Body() body: CreateOrderForm,
   ) {
-    const productEntity = await this.ordersService.findProductById(
-      body.productId,
-    );
+    const [orderEntity, productEntity] = await Promise.all([
+      this.ordersService.findOrderByStatusAndUserId(
+        OrderStatus.InCart,
+        user.id,
+      ),
+      this.ordersService.findProductById(body.productId),
+    ]);
 
-    if (!productEntity) {
+    if (!orderEntity || !productEntity) {
       throw new NotFoundException(ErrorMessage.RecordNotExists);
     }
 
-    const orderEntity = await this.ordersService.findOrderByStatusAndUserId(
-      OrderStatus.InCart,
-      user.id,
-    );
-
-    if (orderEntity) {
-      throw new BadRequestException(ErrorMessage.RecordAlreadyExist);
-    }
-
-    const orderItem = {
+    const item = {
       productId: body.productId,
       quantity: 1,
       price: productEntity.price,
@@ -46,7 +41,7 @@ export class OrdersController {
 
     const createdOrderEntity = await this.ordersService.createOrder(
       user.id,
-      orderItem,
+      item,
     );
 
     if (!createdOrderEntity) {
