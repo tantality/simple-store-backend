@@ -1,18 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { OrderItem, OrderStatus } from '@prisma/client';
 import { PrismaService } from 'libs/prisma/prisma.service';
+import {
+  OrderIdentifier,
+  OrderItemIdentifier,
+  UserIdentifier,
+} from 'types/model-identities.types';
 
 @Injectable()
 export class OrdersRepo {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findOrderItemByIdAndOrderId(itemId: string, orderId: string) {
+  async findOrderItemByIdAndOrderId(
+    itemId: OrderItemIdentifier,
+    orderId: OrderIdentifier,
+  ) {
     return await this.prisma.orderItem.findUnique({
       where: { id: itemId, orderId },
     });
   }
 
-  async findOrderByUserIdWithInCartStatus(userId: string) {
+  async findOrderByUserIdWithInCartStatus(userId: UserIdentifier) {
     return await this.prisma.order.findFirst({
       where: {
         status: OrderStatus.InCart,
@@ -21,7 +29,7 @@ export class OrdersRepo {
     });
   }
 
-  async findOneByIdAndUserId(id: string, userId: string) {
+  async findOneByIdAndUserId(id: OrderIdentifier, userId: UserIdentifier) {
     return await this.prisma.order.findUnique({
       where: {
         id,
@@ -34,7 +42,7 @@ export class OrdersRepo {
   }
 
   async createOne(
-    userId: string,
+    userId: UserIdentifier,
     orderItem: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
   ) {
     return this.prisma.order.create({
@@ -53,7 +61,7 @@ export class OrdersRepo {
   }
 
   async addItemToOrder(
-    orderId: string,
+    orderId: OrderIdentifier,
     orderItem: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
   ) {
     return await this.prisma.order.update({
@@ -70,8 +78,8 @@ export class OrdersRepo {
   }
 
   async updateItemInOrder(
-    orderId: string,
-    itemId: string,
+    orderId: OrderIdentifier,
+    itemId: OrderItemIdentifier,
     item: Pick<OrderItem, 'quantity'>,
   ) {
     return await this.prisma.order.update({
@@ -90,11 +98,14 @@ export class OrdersRepo {
     });
   }
 
-  async deleteOne(orderId: string, userId: string) {
+  async deleteOne(orderId: OrderIdentifier, userId: UserIdentifier) {
     return await this.prisma.order.delete({ where: { id: orderId, userId } });
   }
 
-  async deleteItemFromOrder(itemId: string, orderId: string) {
+  async deleteItemFromOrder(
+    itemId: OrderItemIdentifier,
+    orderId: OrderIdentifier,
+  ) {
     return await this.prisma.order.update({
       data: {
         items: {
