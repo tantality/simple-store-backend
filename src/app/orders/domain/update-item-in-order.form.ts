@@ -1,3 +1,3 @@
-export class UpdateOrderItemForm {
+export class UpdateItemInOrderForm {
   quantity: number;
 }
