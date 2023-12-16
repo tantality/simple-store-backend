@@ -40,9 +40,10 @@ export class OrdersController {
     @CurrentUser() user: UserSessionDto,
     @Body() body: CreateOrderForm,
   ) {
+    const { item } = body;
     const [orderEntity, productEntity] = await Promise.all([
       this.ordersService.findOrderByUserIdWithInCartStatus(user.id),
-      this.ordersService.findProductById(body.productId),
+      this.ordersService.findProductById(item.productId),
     ]);
 
     if (orderEntity) {
@@ -53,15 +54,14 @@ export class OrdersController {
       throw new NotFoundException(ErrorMessage.RecordNotExists);
     }
 
-    const item = {
-      productId: body.productId,
-      quantity: 1,
+    const orderItem = {
+      ...item,
       price: productEntity.price,
     };
 
     const createdOrderEntity = await this.ordersService.createOrder(
       user.id,
-      item,
+      orderItem,
     );
 
     if (!createdOrderEntity) {
@@ -87,8 +87,7 @@ export class OrdersController {
     }
 
     const item = {
-      productId: body.productId,
-      quantity: 1,
+      ...body,
       price: productEntity.price,
     };
 
