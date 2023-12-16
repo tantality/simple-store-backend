@@ -43,14 +43,14 @@ export class OrdersRepo {
 
   async createOne(
     userId: UserIdentifier,
-    orderItem: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
+    item: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
   ) {
     return this.prisma.order.create({
       data: {
         userId,
         items: {
           create: {
-            ...orderItem,
+            ...item,
           },
         },
       },
@@ -60,15 +60,15 @@ export class OrdersRepo {
     });
   }
 
-  async addItemToOrder(
+  async createOrderItem(
     orderId: OrderIdentifier,
-    orderItem: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
+    item: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
   ) {
     return await this.prisma.order.update({
       data: {
         items: {
           create: {
-            ...orderItem,
+            ...item,
           },
         },
       },
@@ -77,7 +77,7 @@ export class OrdersRepo {
     });
   }
 
-  async updateItemInOrder(
+  async updateOrderItem(
     orderId: OrderIdentifier,
     itemId: OrderItemIdentifier,
     item: Pick<OrderItem, 'quantity'>,
@@ -102,10 +102,7 @@ export class OrdersRepo {
     return await this.prisma.order.delete({ where: { id: orderId, userId } });
   }
 
-  async deleteItemFromOrder(
-    itemId: OrderItemIdentifier,
-    orderId: OrderIdentifier,
-  ) {
+  async deleteOrderItem(orderId: OrderIdentifier, itemId: OrderItemIdentifier) {
     return await this.prisma.order.update({
       data: {
         items: {

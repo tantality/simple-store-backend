@@ -16,9 +16,9 @@ import { HttpStatus } from '@nestjs/common/enums';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
 import { ErrorMessage } from 'enums/error-message.enum';
 import { CurrentUser } from 'libs/security/decorators/current-user.decorator';
-import { AddItemToOrderForm } from './domain/add-item-to-order.form';
+import { CreateOrderItemForm } from './domain/add-item-to-order.form';
 import { CreateOrderForm } from './domain/create-order.form';
-import { UpdateItemInOrderForm } from './domain/update-item-in-order.form';
+import { UpdateOrderItemForm } from './domain/update-item-in-order.form';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
@@ -80,10 +80,10 @@ export class OrdersController {
   }
 
   @Post(':orderId/items')
-  async addItemToOrder(
+  async createOrderItem(
     @Param('orderId') orderId: string,
     @CurrentUser() user: UserSessionDto,
-    @Body() body: AddItemToOrderForm,
+    @Body() body: CreateOrderItemForm,
   ) {
     const [orderEntity, productEntity] = await Promise.all([
       this.ordersService.findOrderByIdAndUserId(orderId, user.id),
@@ -99,7 +99,10 @@ export class OrdersController {
       price: productEntity.price,
     };
 
-    const updatedOrderEntity = this.ordersService.addItemToOrder(orderId, item);
+    const updatedOrderEntity = this.ordersService.createOrderItem(
+      orderId,
+      item,
+    );
 
     if (!updatedOrderEntity) {
       throw new BadRequestException(ErrorMessage.RecordCreationFailed);
@@ -109,11 +112,11 @@ export class OrdersController {
   }
 
   @Put(':orderId/items/:itemId')
-  async updateItemInOrder(
+  async updateOrderItem(
     @Param('orderId') orderId: string,
     @Param('itemId') itemId: string,
     @CurrentUser() user: UserSessionDto,
-    @Body() body: UpdateItemInOrderForm,
+    @Body() body: UpdateOrderItemForm,
   ) {
     const [orderEntity, itemEntity] = await Promise.all([
       this.ordersService.findOrderByIdAndUserId(orderId, user.id),
@@ -124,7 +127,7 @@ export class OrdersController {
       throw new NotFoundException(ErrorMessage.RecordNotExists);
     }
 
-    const updatedOrderEntity = this.ordersService.updateItemInOrder(
+    const updatedOrderEntity = this.ordersService.updateOrderItem(
       orderId,
       itemId,
       body,
@@ -163,7 +166,7 @@ export class OrdersController {
   }
 
   @Delete(':orderId/items/:itemId')
-  async deleteItemFromOrder(
+  async deleteOrderItem(
     @Param('orderId') orderId: string,
     @Param('itemId') itemId: string,
     @CurrentUser() user: UserSessionDto,
@@ -177,9 +180,9 @@ export class OrdersController {
       throw new NotFoundException(ErrorMessage.RecordNotExists);
     }
 
-    const updatedOrderEntity = await this.ordersService.deleteItemFromOrder(
-      itemId,
+    const updatedOrderEntity = await this.ordersService.deleteOrderItem(
       orderId,
+      itemId,
     );
 
     if (!updatedOrderEntity) {

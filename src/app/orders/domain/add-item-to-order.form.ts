@@ -1,4 +1,4 @@
-export class AddItemToOrderForm {
+export class CreateOrderItemForm {
   productId: string;
   quantity: number;
 }

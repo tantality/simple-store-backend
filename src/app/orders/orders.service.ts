@@ -37,34 +37,31 @@ export class OrdersService {
 
   async createOrder(
     userId: UserIdentifier,
-    orderItem: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
+    item: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
   ) {
-    return await this.ordersRepo.createOne(userId, orderItem);
+    return await this.ordersRepo.createOne(userId, item);
   }
 
-  async addItemToOrder(
+  async createOrderItem(
     orderId: OrderIdentifier,
-    orderItem: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
+    item: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
   ) {
-    return await this.ordersRepo.addItemToOrder(orderId, orderItem);
+    return await this.ordersRepo.createOrderItem(orderId, item);
   }
 
-  async updateItemInOrder(
+  async updateOrderItem(
     orderId: OrderIdentifier,
     itemId: OrderItemIdentifier,
     item: Pick<OrderItem, 'quantity'>,
   ) {
-    return await this.ordersRepo.updateItemInOrder(orderId, itemId, item);
+    return await this.ordersRepo.updateOrderItem(orderId, itemId, item);
   }
 
   async deleteOrder(orderId: OrderIdentifier, userId: UserIdentifier) {
     return await this.ordersRepo.deleteOne(orderId, userId);
   }
 
-  async deleteItemFromOrder(
-    itemId: OrderItemIdentifier,
-    orderId: OrderIdentifier,
-  ) {
-    return await this.ordersRepo.deleteItemFromOrder(itemId, orderId);
+  async deleteOrderItem(orderId: OrderIdentifier, itemId: OrderItemIdentifier) {
+    return await this.ordersRepo.deleteOrderItem(orderId, itemId);
   }
 }
