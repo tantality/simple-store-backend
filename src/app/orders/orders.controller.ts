@@ -35,6 +35,14 @@ export class OrdersController {
     return orderEntity;
   }
 
+  @Get('/cart')
+  async getOrderWithInCartStatus(@CurrentUser() user: UserSessionDto) {
+    const orderEntity =
+      await this.ordersService.findOrderByUserIdWithInCartStatus(user.id);
+
+    return orderEntity;
+  }
+
   @Post()
   async createOrder(
     @CurrentUser() user: UserSessionDto,
