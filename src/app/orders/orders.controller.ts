@@ -13,12 +13,13 @@ import {
   Put,
 } from '@nestjs/common/decorators';
 import { HttpStatus } from '@nestjs/common/enums';
+import { OrderDto } from 'domain/dto/order.dto';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
 import { ErrorMessage } from 'enums/error-message.enum';
 import { CurrentUser } from 'libs/security/decorators/current-user.decorator';
-import { CreateOrderItemForm } from './domain/add-item-to-order.form';
+import { AddItemToOrderForm } from './domain/add-item-to-order.form';
 import { CreateOrderForm } from './domain/create-order.form';
-import { UpdateOrderItemForm } from './domain/update-item-in-order.form';
+import { UpdateItemInOrderForm } from './domain/update-item-in-order.form';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
@@ -32,7 +33,7 @@ export class OrdersController {
       user.id,
     );
 
-    return orderEntity;
+    return OrderDto.fromEntity(orderEntity);
   }
 
   @Get('/cart')
@@ -40,7 +41,7 @@ export class OrdersController {
     const orderEntity =
       await this.ordersService.findOrderByUserIdWithInCartStatus(user.id);
 
-    return orderEntity;
+    return OrderDto.fromEntity(orderEntity);
   }
 
   @Post()
@@ -76,14 +77,14 @@ export class OrdersController {
       throw new BadRequestException(ErrorMessage.RecordCreationFailed);
     }
 
-    return createdOrderEntity;
+    return OrderDto.fromEntity(createdOrderEntity);
   }
 
   @Post(':orderId/items')
   async createOrderItem(
     @Param('orderId') orderId: string,
     @CurrentUser() user: UserSessionDto,
-    @Body() body: CreateOrderItemForm,
+    @Body() body: AddItemToOrderForm,
   ) {
     const [orderEntity, productEntity] = await Promise.all([
       this.ordersService.findOrderByIdAndUserId(orderId, user.id),
@@ -108,7 +109,7 @@ export class OrdersController {
       throw new BadRequestException(ErrorMessage.RecordCreationFailed);
     }
 
-    return updatedOrderEntity;
+    return OrderDto.fromEntity(updatedOrderEntity);
   }
 
   @Put(':orderId/items/:itemId')
@@ -116,7 +117,7 @@ export class OrdersController {
     @Param('orderId') orderId: string,
     @Param('itemId') itemId: string,
     @CurrentUser() user: UserSessionDto,
-    @Body() body: UpdateOrderItemForm,
+    @Body() body: UpdateItemInOrderForm,
   ) {
     const [orderEntity, itemEntity] = await Promise.all([
       this.ordersService.findOrderByIdAndUserId(orderId, user.id),
@@ -137,7 +138,7 @@ export class OrdersController {
       throw new BadRequestException(ErrorMessage.RecordUpdationFailed);
     }
 
-    return updatedOrderEntity;
+    return OrderDto.fromEntity(updatedOrderEntity);
   }
 
   @Delete(':id')
@@ -189,6 +190,6 @@ export class OrdersController {
       throw new BadRequestException(ErrorMessage.RecordDeletionFailed);
     }
 
-    return updatedOrderEntity;
+    return OrderDto.fromEntity(updatedOrderEntity);
   }
 }
