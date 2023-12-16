@@ -13,7 +13,6 @@ import {
   Put,
 } from '@nestjs/common/decorators';
 import { HttpStatus } from '@nestjs/common/enums';
-import { OrderStatus } from '@prisma/client';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
 import { ErrorMessage } from 'enums/error-message.enum';
 import { CurrentUser } from 'libs/security/decorators/current-user.decorator';
@@ -42,10 +41,7 @@ export class OrdersController {
     @Body() body: CreateOrderForm,
   ) {
     const [orderEntity, productEntity] = await Promise.all([
-      this.ordersService.findOrderByStatusAndUserId(
-        OrderStatus.InCart,
-        user.id,
-      ),
+      this.ordersService.findOrderByUserIdWithInCartStatus(user.id),
       this.ordersService.findProductById(body.productId),
     ]);
 

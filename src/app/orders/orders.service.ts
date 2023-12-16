@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { OrderItem, OrderStatus } from '@prisma/client';
+import { OrderItem } from '@prisma/client';
 import { OrdersRepo } from 'domain/repos/orders.repo';
 import { ProductsRepo } from 'domain/repos/products.repo';
 
@@ -18,8 +18,8 @@ export class OrdersService {
     return await this.productsRepo.findOneById(id);
   }
 
-  async findOrderByStatusAndUserId(status: OrderStatus, userId: string) {
-    return await this.ordersRepo.findOrderByStatusAndUserId(status, userId);
+  async findOrderByUserIdWithInCartStatus(userId: string) {
+    return await this.ordersRepo.findOrderByUserIdWithInCartStatus(userId);
   }
 
   async findOrderByIdAndUserId(id: string, userId: string) {

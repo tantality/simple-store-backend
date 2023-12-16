@@ -12,10 +12,10 @@ export class OrdersRepo {
     });
   }
 
-  async findOrderByStatusAndUserId(status: OrderStatus, userId: string) {
+  async findOrderByUserIdWithInCartStatus(userId: string) {
     return await this.prisma.order.findFirst({
       where: {
-        status,
+        status: OrderStatus.InCart,
         userId,
       },
     });
