@@ -3,7 +3,14 @@ import {
   Controller,
   NotFoundException,
 } from '@nestjs/common';
-import { Body, Delete, HttpCode, Param, Post } from '@nestjs/common/decorators';
+import {
+  Body,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+} from '@nestjs/common/decorators';
 import { HttpStatus } from '@nestjs/common/enums';
 import { OrderStatus } from '@prisma/client';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
@@ -16,6 +23,16 @@ import { OrdersService } from './orders.service';
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
+
+  @Get(':id')
+  async getOrder(@Param('id') id: string, @CurrentUser() user: UserSessionDto) {
+    const orderEntity = await this.ordersService.findOrderByIdAndUserId(
+      id,
+      user.id,
+    );
+
+    return orderEntity;
+  }
 
   @Post()
   async createOrder(

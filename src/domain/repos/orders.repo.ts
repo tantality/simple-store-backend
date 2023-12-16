@@ -27,6 +27,9 @@ export class OrdersRepo {
         id,
         userId,
       },
+      include: {
+        items: true,
+      },
     });
   }
 
