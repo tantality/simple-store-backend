@@ -69,6 +69,27 @@ export class OrdersRepo {
     });
   }
 
+  async updateItemInOrder(
+    orderId: string,
+    itemId: string,
+    item: Pick<OrderItem, 'quantity'>,
+  ) {
+    return await this.prisma.order.update({
+      data: {
+        items: {
+          update: {
+            data: {
+              ...item,
+            },
+            where: { id: itemId },
+          },
+        },
+      },
+      include: { items: true },
+      where: { id: orderId },
+    });
+  }
+
   async deleteOne(orderId: string, userId: string) {
     return await this.prisma.order.delete({ where: { id: orderId, userId } });
   }

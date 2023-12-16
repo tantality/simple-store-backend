@@ -40,6 +40,14 @@ export class OrdersService {
     return await this.ordersRepo.addItemToOrder(orderId, orderItem);
   }
 
+  async updateItemInOrder(
+    orderId: string,
+    itemId: string,
+    item: Pick<OrderItem, 'quantity'>,
+  ) {
+    return await this.ordersRepo.updateItemInOrder(orderId, itemId, item);
+  }
+
   async deleteOrder(orderId: string, userId: string) {
     return await this.ordersRepo.deleteOne(orderId, userId);
   }

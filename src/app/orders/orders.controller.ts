@@ -10,6 +10,7 @@ import {
   HttpCode,
   Param,
   Post,
+  Put,
 } from '@nestjs/common/decorators';
 import { HttpStatus } from '@nestjs/common/enums';
 import { OrderStatus } from '@prisma/client';
@@ -18,6 +19,7 @@ import { ErrorMessage } from 'enums/error-message.enum';
 import { CurrentUser } from 'libs/security/decorators/current-user.decorator';
 import { AddItemToOrderForm } from './domain/add-item-to-order.form';
 import { CreateOrderForm } from './domain/create-order.form';
+import { UpdateItemInOrderForm } from './domain/update-item-in-order.form';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
@@ -73,9 +75,9 @@ export class OrdersController {
     return createdOrderEntity;
   }
 
-  @Post(':id/items')
+  @Post(':orderId/items')
   async addItemToOrder(
-    @Param('id') orderId: string,
+    @Param('orderId') orderId: string,
     @CurrentUser() user: UserSessionDto,
     @Body() body: AddItemToOrderForm,
   ) {
@@ -98,6 +100,35 @@ export class OrdersController {
 
     if (!updatedOrderEntity) {
       throw new BadRequestException(ErrorMessage.RecordCreationFailed);
+    }
+
+    return updatedOrderEntity;
+  }
+
+  @Put(':orderId/items/:itemId')
+  async updateItemInOrder(
+    @Param('orderId') orderId: string,
+    @Param('itemId') itemId: string,
+    @CurrentUser() user: UserSessionDto,
+    @Body() body: UpdateItemInOrderForm,
+  ) {
+    const [orderEntity, itemEntity] = await Promise.all([
+      this.ordersService.findOrderByIdAndUserId(orderId, user.id),
+      this.ordersService.findOrderItemByIdAndOrderId(itemId, orderId),
+    ]);
+
+    if (!orderEntity || !itemEntity) {
+      throw new NotFoundException(ErrorMessage.RecordNotExists);
+    }
+
+    const updatedOrderEntity = this.ordersService.updateItemInOrder(
+      orderId,
+      itemId,
+      body,
+    );
+
+    if (!updatedOrderEntity) {
+      throw new BadRequestException(ErrorMessage.RecordUpdationFailed);
     }
 
     return updatedOrderEntity;
