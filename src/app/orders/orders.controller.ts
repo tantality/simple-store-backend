@@ -30,7 +30,11 @@ export class OrdersController {
       this.ordersService.findProductById(body.productId),
     ]);
 
-    if (!orderEntity || !productEntity) {
+    if (orderEntity) {
+      throw new BadRequestException(ErrorMessage.RecordAlreadyExist);
+    }
+
+    if (!productEntity) {
       throw new NotFoundException(ErrorMessage.RecordNotExists);
     }
 
