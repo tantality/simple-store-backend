@@ -5,7 +5,7 @@ import {
   OrderIdentifier,
   OrderItemIdentifier,
   UserIdentifier,
-} from 'types/model-identifires.types';
+} from 'types/model-identifiers.types';
 
 @Injectable()
 export class OrdersRepo {

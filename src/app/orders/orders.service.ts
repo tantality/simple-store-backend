@@ -7,7 +7,7 @@ import {
   OrderItemIdentifier,
   ProductIdentifier,
   UserIdentifier,
-} from 'types/model-identifires.types';
+} from 'types/model-identifiers.types';
 
 @Injectable()
 export class OrdersService {
