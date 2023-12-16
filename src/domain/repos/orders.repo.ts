@@ -6,6 +6,12 @@ import { PrismaService } from 'libs/prisma/prisma.service';
 export class OrdersRepo {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findOrderItemByIdAndOrderId(itemId: string, orderId: string) {
+    return await this.prisma.orderItem.findUnique({
+      where: { id: itemId, orderId },
+    });
+  }
+
   async findOrderByStatusAndUserId(status: OrderStatus, userId: string) {
     return await this.prisma.order.findFirst({
       where: {
@@ -57,6 +63,15 @@ export class OrdersRepo {
       },
       where: { id: orderId },
       include: { items: true },
+    });
+  }
+
+  async deleteItemFromOrder(itemId: string, orderId: string) {
+    return await this.prisma.orderItem.delete({
+      where: {
+        id: itemId,
+        orderId,
+      },
     });
   }
 }

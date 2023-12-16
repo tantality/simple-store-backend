@@ -3,7 +3,8 @@ import {
   Controller,
   NotFoundException,
 } from '@nestjs/common';
-import { Body, Param, Post } from '@nestjs/common/decorators';
+import { Body, Delete, HttpCode, Param, Post } from '@nestjs/common/decorators';
+import { HttpStatus } from '@nestjs/common/enums';
 import { OrderStatus } from '@prisma/client';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
 import { ErrorMessage } from 'enums/error-message.enum';
@@ -79,5 +80,31 @@ export class OrdersController {
     }
 
     return updatedOrderEntity;
+  }
+
+  @Delete(':orderId/items/:itemId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteItemFromOrder(
+    @Param('orderId') orderId: string,
+    @Param('itemId') itemId: string,
+    @CurrentUser() user: UserSessionDto,
+  ) {
+    const [orderEntity, itemEntity] = await Promise.all([
+      this.ordersService.findOrderByIdAndUserId(orderId, user.id),
+      this.ordersService.findOrderItemByIdAndOrderId(itemId, orderId),
+    ]);
+
+    if (!orderEntity || !itemEntity) {
+      throw new NotFoundException(ErrorMessage.RecordNotExists);
+    }
+
+    const deletedItemEntity = await this.ordersService.deleteItemFromOrder(
+      itemId,
+      orderId,
+    );
+
+    if (!deletedItemEntity) {
+      throw new BadRequestException(ErrorMessage.RecordDeletionFailed);
+    }
   }
 }

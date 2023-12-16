@@ -10,6 +10,10 @@ export class OrdersService {
     private productsRepo: ProductsRepo,
   ) {}
 
+  async findOrderItemByIdAndOrderId(itemId: string, orderId: string) {
+    return await this.ordersRepo.findOrderItemByIdAndOrderId(itemId, orderId);
+  }
+
   async findProductById(id: string) {
     return await this.productsRepo.findOneById(id);
   }
@@ -34,5 +38,9 @@ export class OrdersService {
     orderItem: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
   ) {
     return await this.ordersRepo.addItemToOrder(orderId, orderItem);
+  }
+
+  async deleteItemFromOrder(itemId: string, orderId: string) {
+    return await this.ordersRepo.deleteItemFromOrder(itemId, orderId);
   }
 }
