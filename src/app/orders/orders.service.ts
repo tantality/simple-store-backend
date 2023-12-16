@@ -40,6 +40,10 @@ export class OrdersService {
     return await this.ordersRepo.addItemToOrder(orderId, orderItem);
   }
 
+  async deleteOrder(orderId: string, userId: string) {
+    return await this.ordersRepo.deleteOne(orderId, userId);
+  }
+
   async deleteItemFromOrder(itemId: string, orderId: string) {
     return await this.ordersRepo.deleteItemFromOrder(itemId, orderId);
   }

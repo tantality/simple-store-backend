@@ -82,6 +82,31 @@ export class OrdersController {
     return updatedOrderEntity;
   }
 
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteOrder(
+    @Param('id') id: string,
+    @CurrentUser() user: UserSessionDto,
+  ) {
+    const orderEntity = await this.ordersService.findOrderByIdAndUserId(
+      id,
+      user.id,
+    );
+
+    if (!orderEntity) {
+      throw new NotFoundException(ErrorMessage.RecordNotExists);
+    }
+
+    const deletedOrderEntity = await this.ordersService.deleteOrder(
+      id,
+      user.id,
+    );
+
+    if (!deletedOrderEntity) {
+      throw new BadRequestException(ErrorMessage.RecordDeletionFailed);
+    }
+  }
+
   @Delete(':orderId/items/:itemId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteItemFromOrder(

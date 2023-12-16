@@ -66,6 +66,10 @@ export class OrdersRepo {
     });
   }
 
+  async deleteOne(orderId: string, userId: string) {
+    return await this.prisma.order.delete({ where: { id: orderId, userId } });
+  }
+
   async deleteItemFromOrder(itemId: string, orderId: string) {
     return await this.prisma.orderItem.delete({
       where: {
