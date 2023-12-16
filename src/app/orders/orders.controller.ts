@@ -100,7 +100,7 @@ export class OrdersController {
       price: productEntity.price,
     };
 
-    const updatedOrderEntity = this.ordersService.createOrderItem(
+    const updatedOrderEntity = await this.ordersService.createOrderItem(
       orderId,
       item,
     );
@@ -128,7 +128,7 @@ export class OrdersController {
       throw new NotFoundException(ErrorMessage.RecordNotExists);
     }
 
-    const updatedOrderEntity = this.ordersService.updateOrderItem(
+    const updatedOrderEntity = await this.ordersService.updateOrderItem(
       orderId,
       itemId,
       body,
