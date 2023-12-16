@@ -15,6 +15,15 @@ export class OrdersRepo {
     });
   }
 
+  async findOneByIdAndUserId(id: string, userId: string) {
+    return await this.prisma.order.findUnique({
+      where: {
+        id,
+        userId,
+      },
+    });
+  }
+
   async createOne(
     userId: string,
     orderItem: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
@@ -31,6 +40,23 @@ export class OrdersRepo {
       include: {
         items: true,
       },
+    });
+  }
+
+  async addItemToOrder(
+    orderId: string,
+    orderItem: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
+  ) {
+    return await this.prisma.order.update({
+      data: {
+        items: {
+          create: {
+            ...orderItem,
+          },
+        },
+      },
+      where: { id: orderId },
+      include: { items: true },
     });
   }
 }

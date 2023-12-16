@@ -18,10 +18,21 @@ export class OrdersService {
     return await this.ordersRepo.findOrderByStatusAndUserId(status, userId);
   }
 
+  async findOrderByIdAndUserId(id: string, userId: string) {
+    return await this.ordersRepo.findOneByIdAndUserId(id, userId);
+  }
+
   async createOrder(
     userId: string,
     orderItem: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
   ) {
     return await this.ordersRepo.createOne(userId, orderItem);
+  }
+
+  async addItemToOrder(
+    orderId: string,
+    orderItem: Pick<OrderItem, 'productId' | 'quantity' | 'price'>,
+  ) {
+    return await this.ordersRepo.addItemToOrder(orderId, orderItem);
   }
 }
