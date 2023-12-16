@@ -17,9 +17,9 @@ import { OrderDto } from 'domain/dto/order.dto';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
 import { ErrorMessage } from 'enums/error-message.enum';
 import { CurrentUser } from 'libs/security/decorators/current-user.decorator';
-import { AddItemToOrderForm } from './domain/add-item-to-order.form';
+import { CreateOrderItemForm } from './domain/create-order-item.form';
 import { CreateOrderForm } from './domain/create-order.form';
-import { UpdateItemInOrderForm } from './domain/update-item-in-order.form';
+import { UpdateOrderItemForm } from './domain/update-order-item.form';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
@@ -84,7 +84,7 @@ export class OrdersController {
   async createOrderItem(
     @Param('orderId') orderId: string,
     @CurrentUser() user: UserSessionDto,
-    @Body() body: AddItemToOrderForm,
+    @Body() body: CreateOrderItemForm,
   ) {
     const [orderEntity, productEntity] = await Promise.all([
       this.ordersService.findOrderByIdAndUserId(orderId, user.id),
@@ -117,7 +117,7 @@ export class OrdersController {
     @Param('orderId') orderId: string,
     @Param('itemId') itemId: string,
     @CurrentUser() user: UserSessionDto,
-    @Body() body: UpdateItemInOrderForm,
+    @Body() body: UpdateOrderItemForm,
   ) {
     const [orderEntity, itemEntity] = await Promise.all([
       this.ordersService.findOrderByIdAndUserId(orderId, user.id),
