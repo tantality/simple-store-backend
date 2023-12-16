@@ -71,10 +71,17 @@ export class OrdersRepo {
   }
 
   async deleteItemFromOrder(itemId: string, orderId: string) {
-    return await this.prisma.orderItem.delete({
-      where: {
-        id: itemId,
-        orderId,
+    return await this.prisma.order.update({
+      data: {
+        items: {
+          delete: {
+            id: itemId,
+          },
+        },
+      },
+      where: { id: orderId },
+      include: {
+        items: true,
       },
     });
   }

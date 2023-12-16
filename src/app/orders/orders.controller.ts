@@ -112,7 +112,6 @@ export class OrdersController {
   }
 
   @Delete(':orderId/items/:itemId')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteItemFromOrder(
     @Param('orderId') orderId: string,
     @Param('itemId') itemId: string,
@@ -127,13 +126,15 @@ export class OrdersController {
       throw new NotFoundException(ErrorMessage.RecordNotExists);
     }
 
-    const deletedItemEntity = await this.ordersService.deleteItemFromOrder(
+    const updatedOrderEntity = await this.ordersService.deleteItemFromOrder(
       itemId,
       orderId,
     );
 
-    if (!deletedItemEntity) {
+    if (!updatedOrderEntity) {
       throw new BadRequestException(ErrorMessage.RecordDeletionFailed);
     }
+
+    return updatedOrderEntity;
   }
 }
