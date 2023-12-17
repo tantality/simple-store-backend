@@ -1,9 +1,5 @@
 import { Query } from '@nestjs/common';
-import {
-  BadRequestException,
-  Controller,
-  NotFoundException,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import {
   Body,
   Delete,
@@ -14,6 +10,7 @@ import {
   Put,
 } from '@nestjs/common/decorators';
 import { HttpStatus } from '@nestjs/common/enums';
+import { InternalServerErrorException } from '@nestjs/common/exceptions';
 import { ParseUUIDPipe } from '@nestjs/common/pipes/parse-uuid.pipe';
 import { OrderDto } from 'domain/dto/order.dto';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
@@ -74,11 +71,11 @@ export class OrdersController {
     ]);
 
     if (orderEntity) {
-      throw new BadRequestException(ErrorMessage.RecordAlreadyExist);
+      throw new InternalServerErrorException(ErrorMessage.RecordAlreadyExist);
     }
 
     if (!productEntity) {
-      throw new NotFoundException(ErrorMessage.RecordNotExists);
+      throw new InternalServerErrorException(ErrorMessage.RecordNotExists);
     }
 
     const orderItem = {
@@ -92,7 +89,7 @@ export class OrdersController {
     );
 
     if (!createdOrderEntity) {
-      throw new BadRequestException(ErrorMessage.RecordCreationFailed);
+      throw new InternalServerErrorException(ErrorMessage.RecordCreationFailed);
     }
 
     return OrderDto.fromEntity(createdOrderEntity);
@@ -110,7 +107,7 @@ export class OrdersController {
     ]);
 
     if (!orderEntity || !productEntity) {
-      throw new NotFoundException(ErrorMessage.RecordNotExists);
+      throw new InternalServerErrorException(ErrorMessage.RecordNotExists);
     }
 
     const item = {
@@ -124,7 +121,7 @@ export class OrdersController {
     );
 
     if (!updatedOrderEntity) {
-      throw new BadRequestException(ErrorMessage.RecordCreationFailed);
+      throw new InternalServerErrorException(ErrorMessage.RecordCreationFailed);
     }
 
     return OrderDto.fromEntity(updatedOrderEntity);
@@ -143,7 +140,7 @@ export class OrdersController {
     ]);
 
     if (!orderEntity || !itemEntity) {
-      throw new NotFoundException(ErrorMessage.RecordNotExists);
+      throw new InternalServerErrorException(ErrorMessage.RecordNotExists);
     }
 
     const updatedOrderEntity = await this.ordersService.updateOrderItem(
@@ -153,7 +150,7 @@ export class OrdersController {
     );
 
     if (!updatedOrderEntity) {
-      throw new BadRequestException(ErrorMessage.RecordUpdationFailed);
+      throw new InternalServerErrorException(ErrorMessage.RecordUpdationFailed);
     }
 
     return OrderDto.fromEntity(updatedOrderEntity);
@@ -171,7 +168,7 @@ export class OrdersController {
     );
 
     if (!orderEntity) {
-      throw new NotFoundException(ErrorMessage.RecordNotExists);
+      throw new InternalServerErrorException(ErrorMessage.RecordNotExists);
     }
 
     const deletedOrderEntity = await this.ordersService.deleteOrder(
@@ -180,7 +177,7 @@ export class OrdersController {
     );
 
     if (!deletedOrderEntity) {
-      throw new BadRequestException(ErrorMessage.RecordDeletionFailed);
+      throw new InternalServerErrorException(ErrorMessage.RecordDeletionFailed);
     }
   }
 
@@ -196,7 +193,7 @@ export class OrdersController {
     ]);
 
     if (!orderEntity || !itemEntity) {
-      throw new NotFoundException(ErrorMessage.RecordNotExists);
+      throw new InternalServerErrorException(ErrorMessage.RecordNotExists);
     }
 
     const updatedOrderEntity = await this.ordersService.deleteOrderItem(
@@ -205,7 +202,7 @@ export class OrdersController {
     );
 
     if (!updatedOrderEntity) {
-      throw new BadRequestException(ErrorMessage.RecordDeletionFailed);
+      throw new InternalServerErrorException(ErrorMessage.RecordDeletionFailed);
     }
 
     return OrderDto.fromEntity(updatedOrderEntity);
