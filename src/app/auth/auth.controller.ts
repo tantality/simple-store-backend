@@ -1,12 +1,10 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
-  NotFoundException,
   Post,
   Res,
   UseGuards,
@@ -47,7 +45,7 @@ export class AuthController {
       await this.authService.findUserByNormalizedEmail(normalizedEmail);
 
     if (user) {
-      throw new BadRequestException(ErrorMessage.UserAlreadyExists);
+      throw new InternalServerErrorException(ErrorMessage.UserAlreadyExists);
     }
 
     const newUser = await this.authService.makeNewUser({
@@ -86,7 +84,7 @@ export class AuthController {
     });
 
     if (!user) {
-      throw new NotFoundException(ErrorMessage.UserNotExists);
+      throw new InternalServerErrorException(ErrorMessage.UserNotExists);
     }
 
     const payload = { id: user.id, roleId: user.roleId };
