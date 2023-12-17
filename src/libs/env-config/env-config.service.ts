@@ -12,4 +12,8 @@ export class EnvConfigService {
   getJwtRefreshTokenSecret(): string {
     return this.configService.get('JWT_REFRESH_TOKEN_SECRET')!;
   }
+
+  getAppPort(): number {
+    return this.configService.get('APP_PORT');
+  }
 }
