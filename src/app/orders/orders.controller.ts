@@ -35,6 +35,7 @@ export class OrdersController {
       user.id,
       query,
     );
+
     return OrderDto.fromEntities(orderEntities);
   }
 
