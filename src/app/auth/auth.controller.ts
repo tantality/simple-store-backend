@@ -41,23 +41,23 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const normalizedEmail = normalize(body.email);
-    const user =
+    const userEntity =
       await this.authService.findUserByNormalizedEmail(normalizedEmail);
 
-    if (user) {
+    if (userEntity) {
       throw new InternalServerErrorException(ErrorMessage.UserAlreadyExists);
     }
 
-    const newUser = await this.authService.makeNewUser({
+    const newUserEntity = await this.authService.makeNewUser({
       ...body,
       normalizedEmail,
     });
 
-    if (!newUser) {
+    if (!newUserEntity) {
       throw new InternalServerErrorException(ErrorMessage.UserCreationFailed);
     }
 
-    const payload = { id: newUser.id, roleId: newUser.roleId };
+    const payload = { id: newUserEntity.id, roleId: newUserEntity.roleId };
     const tokens = this.authService.generateTokens(payload);
 
     await this.authService.setRefreshToken(payload.id, tokens.refreshToken);
@@ -68,7 +68,7 @@ export class AuthController {
       this.COOKIE_OPTIONS,
     );
 
-    return AuthDto.from({ ...tokens, id: payload.id });
+    return AuthDto.from({ id: payload.id, ...tokens });
   }
 
   @Post('/signin')
@@ -78,16 +78,17 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const normalizedEmail = normalize(body.email);
-    const user = await this.authService.findUserByNormalizedEmailAndPassword({
-      normalizedEmail,
-      password: body.password,
-    });
+    const userEntity =
+      await this.authService.findUserByNormalizedEmailAndPassword({
+        normalizedEmail,
+        password: body.password,
+      });
 
-    if (!user) {
+    if (!userEntity) {
       throw new InternalServerErrorException(ErrorMessage.UserNotExists);
     }
 
-    const payload = { id: user.id, roleId: user.roleId };
+    const payload = { id: userEntity.id, roleId: userEntity.roleId };
     const tokens = this.authService.generateTokens(payload);
 
     await this.authService.setRefreshToken(payload.id, tokens.refreshToken);
@@ -98,7 +99,7 @@ export class AuthController {
       this.COOKIE_OPTIONS,
     );
 
-    return AuthDto.from({ ...tokens, id: payload.id });
+    return AuthDto.from({ id: payload.id, ...tokens });
   }
 
   @Get('signout')

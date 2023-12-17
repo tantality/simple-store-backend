@@ -35,13 +35,13 @@ export class RefreshTokenStrategy extends PassportStrategy(
       this.securityService.verifyRefreshToken(token),
     );
 
-    const user = await this.usersRepo.findOneById(dto.id);
+    const userEntity = await this.usersRepo.findOneById(dto.id);
 
-    if (!user || !user.refreshToken) {
+    if (!userEntity || !userEntity.refreshToken) {
       throw new UnauthorizedException(ErrorMessage.BadRefreshToken);
     }
 
-    const areTokensEqual = user.refreshToken === token;
+    const areTokensEqual = userEntity.refreshToken === token;
 
     if (!areTokensEqual) {
       throw new UnauthorizedException(ErrorMessage.BadRefreshToken);
