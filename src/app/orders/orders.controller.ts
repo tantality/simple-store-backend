@@ -14,6 +14,7 @@ import {
   Put,
 } from '@nestjs/common/decorators';
 import { HttpStatus } from '@nestjs/common/enums';
+import { ParseUUIDPipe } from '@nestjs/common/pipes/parse-uuid.pipe';
 import { OrderDto } from 'domain/dto/order.dto';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
 import { ErrorMessage } from 'enums/error-message.enum';
@@ -41,7 +42,10 @@ export class OrdersController {
   }
 
   @Get(':id')
-  async getOrder(@Param('id') id: string, @CurrentUser() user: UserSessionDto) {
+  async getOrder(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: UserSessionDto,
+  ) {
     const orderEntity = await this.ordersService.findOrderByIdAndUserId(
       id,
       user.id,
@@ -96,7 +100,7 @@ export class OrdersController {
 
   @Post(':orderId/items')
   async createOrderItem(
-    @Param('orderId') orderId: string,
+    @Param('orderId', ParseUUIDPipe) orderId: string,
     @CurrentUser() user: UserSessionDto,
     @Body() body: CreateOrderItemForm,
   ) {
@@ -128,8 +132,8 @@ export class OrdersController {
 
   @Put(':orderId/items/:itemId')
   async updateOrderItem(
-    @Param('orderId') orderId: string,
-    @Param('itemId') itemId: string,
+    @Param('orderId', ParseUUIDPipe) orderId: string,
+    @Param('itemId', ParseUUIDPipe) itemId: string,
     @CurrentUser() user: UserSessionDto,
     @Body() body: UpdateOrderItemForm,
   ) {
@@ -158,7 +162,7 @@ export class OrdersController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteOrder(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: UserSessionDto,
   ) {
     const orderEntity = await this.ordersService.findOrderByIdAndUserId(
@@ -182,8 +186,8 @@ export class OrdersController {
 
   @Delete(':orderId/items/:itemId')
   async deleteOrderItem(
-    @Param('orderId') orderId: string,
-    @Param('itemId') itemId: string,
+    @Param('orderId', ParseUUIDPipe) orderId: string,
+    @Param('itemId', ParseUUIDPipe) itemId: string,
     @CurrentUser() user: UserSessionDto,
   ) {
     const [orderEntity, itemEntity] = await Promise.all([
