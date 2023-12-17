@@ -6,6 +6,8 @@ import { EnvConfigService } from 'libs/env-config/env-config.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.setGlobalPrefix('api/v1');
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
