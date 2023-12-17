@@ -1,3 +1,4 @@
+import { Query } from '@nestjs/common';
 import {
   BadRequestException,
   Controller,
@@ -19,12 +20,25 @@ import { ErrorMessage } from 'enums/error-message.enum';
 import { CurrentUser } from 'libs/security/decorators/current-user.decorator';
 import { CreateOrderItemForm } from './domain/create-order-item.form';
 import { CreateOrderForm } from './domain/create-order.form';
+import { GetUserOrdersQueryDto } from './domain/get-user-orders-query.dto';
 import { UpdateOrderItemForm } from './domain/update-order-item.form';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
+
+  @Get()
+  async getAllUserOrders(
+    @Query() query: GetUserOrdersQueryDto,
+    @CurrentUser() user: UserSessionDto,
+  ) {
+    const orderEntities = await this.ordersService.findAllUserOrders(
+      user.id,
+      query,
+    );
+    return OrderDto.fromEntities(orderEntities);
+  }
 
   @Get(':id')
   async getOrder(@Param('id') id: string, @CurrentUser() user: UserSessionDto) {

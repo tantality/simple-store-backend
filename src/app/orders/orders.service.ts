@@ -8,6 +8,7 @@ import {
   ProductIdentifier,
   UserIdentifier,
 } from 'types/model-identifiers.types';
+import { GetUserOrdersQueryDto } from './domain/get-user-orders-query.dto';
 
 @Injectable()
 export class OrdersService {
@@ -21,6 +22,13 @@ export class OrdersService {
     orderId: OrderIdentifier,
   ) {
     return await this.ordersRepo.findOrderItemByIdAndOrderId(itemId, orderId);
+  }
+
+  async findAllUserOrders(
+    userId: UserIdentifier,
+    query: GetUserOrdersQueryDto,
+  ) {
+    return await this.ordersRepo.findAllUserOrders(userId, query);
   }
 
   async findProductById(id: ProductIdentifier) {

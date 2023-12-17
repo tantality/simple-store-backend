@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { OrderItem, OrderStatus } from '@prisma/client';
+import { OrderItem, OrderStatus, Prisma } from '@prisma/client';
+import { GetUserOrdersQueryDto } from 'app/orders/domain/get-user-orders-query.dto';
 import { PrismaService } from 'libs/prisma/prisma.service';
 import {
   OrderIdentifier,
@@ -10,6 +11,31 @@ import {
 @Injectable()
 export class OrdersRepo {
   constructor(private readonly prisma: PrismaService) {}
+
+  async findAllUserOrders(
+    userId: UserIdentifier,
+    query: GetUserOrdersQueryDto,
+  ) {
+    const { pageNumber, pageSize, excludeCart } = query;
+
+    const exceptOrderWithInCartStatusCondition: Prisma.OrderWhereInput = {
+      NOT: {
+        status: OrderStatus.InCart,
+      },
+    };
+
+    return await this.prisma.order.findMany({
+      skip: (pageNumber - 1) * pageSize,
+      take: pageSize,
+      where: {
+        userId,
+        ...(excludeCart && exceptOrderWithInCartStatusCondition),
+      },
+      include: {
+        items: true,
+      },
+    });
+  }
 
   async findOrderItemByIdAndOrderId(
     itemId: OrderItemIdentifier,
