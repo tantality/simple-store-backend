@@ -1,5 +1,6 @@
-import { Type } from 'class-transformer';
+// import { Transform } from 'class-transformer';
 import { IsBoolean } from 'class-validator';
+import { ParseToBoolean } from 'decorators/parse-to-boolean.decorator';
 import { PaginationQueryDto } from 'domain/dto/pagination-query.dto';
 
 enum ExcludeCart {
@@ -7,7 +8,7 @@ enum ExcludeCart {
 }
 
 export class GetUserOrdersQueryDto extends PaginationQueryDto {
-  @Type(() => Boolean)
   @IsBoolean()
+  @ParseToBoolean()
   excludeCart: boolean = Boolean(ExcludeCart.DefaultNotExclude);
 }
