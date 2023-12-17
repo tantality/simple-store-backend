@@ -14,6 +14,10 @@ export class AuthService {
     private securityService: SecurityService,
   ) {}
 
+  async findUserById(id: UserIdentifier) {
+    return await this.usersRepo.findOneById(id);
+  }
+
   async findUserByNormalizedEmail(
     normalizedEmail: Pick<User, 'normalizedEmail'>['normalizedEmail'],
   ) {

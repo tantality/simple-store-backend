@@ -24,6 +24,7 @@ import { CurrentUser } from 'libs/security/decorators/current-user.decorator';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
 import { SkipAccessTokenCheck } from 'libs/security/decorators/skip-access-token-check.decorator';
 import { RefreshTokenGuard } from 'libs/security/guards/refresh-token.guard';
+import { UserDto } from 'domain/dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -33,6 +34,12 @@ export class AuthController {
   };
 
   constructor(private readonly authService: AuthService) {}
+
+  @Get('me')
+  async authMe(@CurrentUser() user: UserSessionDto) {
+    const userEntity = await this.authService.findUserById(user.id);
+    return UserDto.fromEntity(userEntity);
+  }
 
   @Post('signup')
   @SkipAccessTokenCheck()
