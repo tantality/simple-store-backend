@@ -6,6 +6,10 @@ import { ProductIdentifier } from 'types/model-identifiers.types';
 export class ProductsService {
   constructor(private productsRepo: ProductsRepo) {}
 
+  async findAllProducts() {
+    return await this.productsRepo.findAllProducts();
+  }
+
   async findProductById(id: ProductIdentifier) {
     return this.productsRepo.findOneById(id);
   }

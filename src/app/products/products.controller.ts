@@ -10,6 +10,13 @@ import { ProductsService } from './products.service';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @Get()
+  @SkipAccessTokenCheck()
+  async getAllProducts() {
+    const productEntities = await this.productsService.findAllProducts();
+    return ProductDto.fromEntities(productEntities);
+  }
+
   @Get(':id')
   @SkipAccessTokenCheck()
   async getProduct(@Param('id', ParseUUIDPipe) id: string) {
