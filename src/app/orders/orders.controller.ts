@@ -65,9 +65,9 @@ export class OrdersController {
   @Post()
   async createOrder(
     @CurrentUser() user: UserSessionDto,
-    @Body() body: CreateOrderForm,
+    @Body() form: CreateOrderForm,
   ) {
-    const { item } = body;
+    const { item } = form;
     const [orderEntity, productEntity] = await Promise.all([
       this.ordersService.findOrderByUserIdWithInCartStatus(user.id),
       this.ordersService.findProductById(item.productId),
@@ -102,11 +102,11 @@ export class OrdersController {
   async createOrderItem(
     @Param('orderId', ParseUUIDPipe) orderId: string,
     @CurrentUser() user: UserSessionDto,
-    @Body() body: CreateOrderItemForm,
+    @Body() form: CreateOrderItemForm,
   ) {
     const [orderEntity, productEntity] = await Promise.all([
       this.ordersService.findOrderByIdAndUserId(orderId, user.id),
-      this.ordersService.findProductById(body.productId),
+      this.ordersService.findProductById(form.productId),
     ]);
 
     if (!orderEntity || !productEntity) {
@@ -114,7 +114,7 @@ export class OrdersController {
     }
 
     const item = {
-      ...body,
+      ...form,
       price: productEntity.price,
     };
 
@@ -135,7 +135,7 @@ export class OrdersController {
     @Param('orderId', ParseUUIDPipe) orderId: string,
     @Param('itemId', ParseUUIDPipe) itemId: string,
     @CurrentUser() user: UserSessionDto,
-    @Body() body: UpdateOrderItemForm,
+    @Body() form: UpdateOrderItemForm,
   ) {
     const [orderEntity, itemEntity] = await Promise.all([
       this.ordersService.findOrderByIdAndUserId(orderId, user.id),
@@ -149,7 +149,7 @@ export class OrdersController {
     const updatedOrderEntity = await this.ordersService.updateOrderItem(
       orderId,
       itemId,
-      body,
+      form,
     );
 
     if (!updatedOrderEntity) {
