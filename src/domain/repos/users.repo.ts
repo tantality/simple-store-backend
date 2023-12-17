@@ -1,28 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'libs/prisma/prisma.service';
+import { UserIdentifier } from 'types/model-identifiers.types';
 
 @Injectable()
 export class UsersRepo {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findOneById(id: string) {
+  async findOneById(id: UserIdentifier) {
     return this.prisma.user.findUnique({
       where: { id },
     });
   }
 
-  async findOneByNormalizedEmail({
-    normalizedEmail,
-  }: Pick<User, 'normalizedEmail'>) {
+  async findOneByNormalizedEmail(
+    normalizedEmail: Pick<User, 'normalizedEmail'>['normalizedEmail'],
+  ) {
     return await this.prisma.user.findUnique({
       where: { normalizedEmail },
     });
   }
 
   async findOneByNormalizedEmailAndPassword(
-    normalizedEmail: string,
-    password: string,
+    normalizedEmail: Pick<User, 'normalizedEmail'>['normalizedEmail'],
+    password: Pick<User, 'password'>['password'],
   ) {
     return await this.prisma.user.findUnique({
       where: { normalizedEmail, password },
@@ -37,14 +38,17 @@ export class UsersRepo {
     });
   }
 
-  async setRefreshToken(id: string, refreshToken: string) {
+  async setRefreshToken(
+    id: UserIdentifier,
+    refreshToken: Pick<User, 'refreshToken'>['refreshToken'],
+  ) {
     return await this.prisma.user.update({
       where: { id },
       data: { refreshToken },
     });
   }
 
-  async deleteRefreshToken(userId: string) {
+  async deleteRefreshToken(userId: UserIdentifier) {
     return await this.prisma.user.update({
       where: { id: userId },
       data: {

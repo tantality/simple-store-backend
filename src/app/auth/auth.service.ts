@@ -4,7 +4,7 @@ import { UserSessionDto } from 'domain/dto/user-session.dto';
 import { RolesRepo } from 'domain/repos/roles.repo';
 import { UsersRepo } from 'domain/repos/users.repo';
 import { SecurityService } from 'libs/security/security.service';
-import { SignUpForm } from './domain/signup.form';
+import { UserIdentifier } from 'types/model-identifiers.types';
 
 @Injectable()
 export class AuthService {
@@ -14,10 +14,10 @@ export class AuthService {
     private securityService: SecurityService,
   ) {}
 
-  async findUserByNormalizedEmail(email: string) {
-    return await this.usersRepo.findOneByNormalizedEmail({
-      normalizedEmail: email,
-    });
+  async findUserByNormalizedEmail(
+    normalizedEmail: Pick<User, 'normalizedEmail'>['normalizedEmail'],
+  ) {
+    return await this.usersRepo.findOneByNormalizedEmail(normalizedEmail);
   }
 
   async findUserByNormalizedEmailAndPassword(
@@ -34,7 +34,7 @@ export class AuthService {
   }
 
   async makeNewUser(
-    formWithNormalizedEmail: SignUpForm & Pick<User, 'normalizedEmail'>,
+    user: Pick<User, 'normalizedEmail' | 'email' | 'password'>,
   ) {
     const role = await this.rolesRepo.findOneByType(RoleTypes.User);
     if (!role) {
@@ -42,28 +42,29 @@ export class AuthService {
     }
 
     const hashedPassword = await this.securityService.hashPassword(
-      formWithNormalizedEmail.password,
+      user.password,
     );
 
-    const user = await this.usersRepo.createOne({
+    return await this.usersRepo.createOne({
       roleId: role.id,
-      email: formWithNormalizedEmail.email,
-      normalizedEmail: formWithNormalizedEmail.normalizedEmail,
+      email: user.email,
+      normalizedEmail: user.normalizedEmail,
       password: hashedPassword,
     });
-
-    return user;
   }
 
   generateTokens(payload: UserSessionDto) {
     return this.securityService.generateTokens(payload);
   }
 
-  async setRefreshToken(userId: string, token: string) {
+  async setRefreshToken(
+    userId: UserIdentifier,
+    token: Pick<User, 'refreshToken'>['refreshToken'],
+  ) {
     return await this.usersRepo.setRefreshToken(userId, token);
   }
 
-  async signout(userId: string) {
+  async signout(userId: UserIdentifier) {
     return await this.usersRepo.deleteRefreshToken(userId);
   }
 
