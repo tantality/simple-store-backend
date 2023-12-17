@@ -1,4 +1,3 @@
-// import { Transform } from 'class-transformer';
 import { IsBoolean } from 'class-validator';
 import { ParseToBoolean } from 'decorators/parse-to-boolean.decorator';
 import { PaginationQueryDto } from 'domain/dto/pagination-query.dto';
