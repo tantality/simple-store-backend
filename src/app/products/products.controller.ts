@@ -1,3 +1,4 @@
+import { ParseUUIDPipe } from '@nestjs/common';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Controller, Param, Get } from '@nestjs/common';
 import { ProductDto } from 'domain/dto/product.dto';
@@ -11,7 +12,7 @@ export class ProductsController {
 
   @Get(':id')
   @SkipAccessTokenCheck()
-  async getProduct(@Param('id') id: string) {
+  async getProduct(@Param('id', ParseUUIDPipe) id: string) {
     const productEntity = await this.productsService.findProductById(id);
 
     if (!productEntity) {
