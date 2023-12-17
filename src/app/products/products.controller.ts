@@ -1,4 +1,5 @@
-import { Controller, Param, Get, NotFoundException } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
+import { Controller, Param, Get } from '@nestjs/common';
 import { ProductDto } from 'domain/dto/product.dto';
 import { ErrorMessage } from 'enums/error-message.enum';
 import { SkipAccessTokenCheck } from 'libs/security/decorators/skip-access-token-check.decorator';
@@ -11,12 +12,12 @@ export class ProductsController {
   @Get(':id')
   @SkipAccessTokenCheck()
   async getProduct(@Param('id') id: string) {
-    const product = await this.productsService.findProductById(id);
+    const productEntity = await this.productsService.findProductById(id);
 
-    if (!product) {
-      throw new NotFoundException(ErrorMessage.RecordNotExists);
+    if (!productEntity) {
+      throw new InternalServerErrorException(ErrorMessage.RecordNotExists);
     }
 
-    return ProductDto.fromEntity(product);
+    return ProductDto.fromEntity(productEntity);
   }
 }
