@@ -33,7 +33,7 @@ CREATE TABLE "orders" (
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "status" "OrderStatus" NOT NULL DEFAULT 'in-cart',
-    "total_price" INTEGER,
+    "total_price" INTEGER NOT NULL DEFAULT 0,
     "user_id" UUID NOT NULL,
 
     CONSTRAINT "orders_pkey" PRIMARY KEY ("id")

@@ -81,7 +81,7 @@ model OrderItem {
 
   product   Product @relation(fields: [productId], references: [id])
   productId String  @map("product_id") @db.Uuid
-  order     Order   @relation(fields: [orderId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   String  @map("order_id") @db.Uuid
 
   @@map("order_items")
@@ -93,7 +93,7 @@ model Order {
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
 
   status     OrderStatus @default(InCart)
-  totalPrice Int         @map("total_price")
+  totalPrice Int         @default(0) @map("total_price")
 
   items  OrderItem[]
   user   User        @relation(fields: [userId], references: [id])
