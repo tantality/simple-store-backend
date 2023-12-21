@@ -39,6 +39,14 @@ export class OrdersController {
     return OrderDto.fromEntities(orderEntities);
   }
 
+  @Get('/cart')
+  async getOrderWithInCartStatus(@CurrentUser() user: UserSessionDto) {
+    const orderEntity =
+      await this.ordersService.findOrderByUserIdWithInCartStatus(user.id);
+
+    return OrderDto.fromEntity(orderEntity);
+  }
+
   @Get(':id')
   async getOrder(
     @Param('id', ParseUUIDPipe) id: string,
@@ -48,14 +56,6 @@ export class OrdersController {
       id,
       user.id,
     );
-
-    return OrderDto.fromEntity(orderEntity);
-  }
-
-  @Get('/cart')
-  async getOrderWithInCartStatus(@CurrentUser() user: UserSessionDto) {
-    const orderEntity =
-      await this.ordersService.findOrderByUserIdWithInCartStatus(user.id);
 
     return OrderDto.fromEntity(orderEntity);
   }
