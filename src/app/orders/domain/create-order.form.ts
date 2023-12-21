@@ -1,4 +1,5 @@
-import { IsUUID, Max, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsUUID, Max, Min, ValidateNested } from 'class-validator';
 import { OrderItemQuantity } from './enums/validation.enums';
 
 class OrderItem {
@@ -11,5 +12,7 @@ class OrderItem {
 }
 
 export class CreateOrderForm {
+  @ValidateNested({ each: true })
+  @Type(() => OrderItem)
   item: OrderItem;
 }
