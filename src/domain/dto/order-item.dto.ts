@@ -1,4 +1,5 @@
-import { OrderItem } from '@prisma/client';
+import { OrderItem, Product } from '@prisma/client';
+import { ProductDto } from './product.dto';
 import { UUIDDto } from './uuid.dto';
 
 export class OrderItemDto extends UUIDDto {
@@ -6,8 +7,9 @@ export class OrderItemDto extends UUIDDto {
   productId: string;
   quantity: number;
   price: number;
+  product?: ProductDto;
 
-  static fromEntity(entity?: OrderItem) {
+  static fromEntity(entity?: OrderItem & { product?: Product }) {
     if (!entity) {
       return;
     }
@@ -20,6 +22,7 @@ export class OrderItemDto extends UUIDDto {
     it.productId = entity.productId;
     it.quantity = entity.quantity;
     it.price = entity.price;
+    it.product = ProductDto.fromEntity(entity.product);
 
     return it;
   }

@@ -32,7 +32,14 @@ export class OrdersRepo {
         ...(excludeCart && exceptOrderWithInCartStatusCondition),
       },
       include: {
-        items: true,
+        items: {
+          include: {
+            product: true,
+          },
+          orderBy: {
+            id: 'asc',
+          },
+        },
       },
     });
   }
@@ -52,6 +59,16 @@ export class OrdersRepo {
         status: OrderStatus.InCart,
         userId,
       },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+          orderBy: {
+            id: 'asc',
+          },
+        },
+      },
     });
   }
 
@@ -62,7 +79,14 @@ export class OrdersRepo {
         userId,
       },
       include: {
-        items: true,
+        items: {
+          include: {
+            product: true,
+          },
+          orderBy: {
+            id: 'asc',
+          },
+        },
       },
     });
   }
@@ -81,7 +105,14 @@ export class OrdersRepo {
         },
       },
       include: {
-        items: true,
+        items: {
+          include: {
+            product: true,
+          },
+          orderBy: {
+            id: 'asc',
+          },
+        },
       },
     });
   }
@@ -99,7 +130,16 @@ export class OrdersRepo {
         },
       },
       where: { id: orderId },
-      include: { items: true },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+          orderBy: {
+            id: 'asc',
+          },
+        },
+      },
     });
   }
 
@@ -119,7 +159,16 @@ export class OrdersRepo {
           },
         },
       },
-      include: { items: true },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+          orderBy: {
+            id: 'asc',
+          },
+        },
+      },
       where: { id: orderId },
     });
   }
@@ -139,7 +188,14 @@ export class OrdersRepo {
       },
       where: { id: orderId },
       include: {
-        items: true,
+        items: {
+          include: {
+            product: true,
+          },
+          orderBy: {
+            id: 'asc',
+          },
+        },
       },
     });
   }
