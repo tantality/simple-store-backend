@@ -57,6 +57,10 @@ export class OrdersService {
     return await this.ordersRepo.createOrderItem(orderId, item);
   }
 
+  async placeOrder(id: OrderIdentifier) {
+    return await this.ordersRepo.placeOrder(id);
+  }
+
   async updateOrderItem(
     orderId: OrderIdentifier,
     itemId: OrderItemIdentifier,

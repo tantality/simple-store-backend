@@ -143,6 +143,48 @@ export class OrdersRepo {
     });
   }
 
+  async placeOrder(id: OrderIdentifier) {
+    return await this.prisma.$transaction(
+      async (tx) => {
+        const orderItems = await tx.orderItem.findMany({
+          where: {
+            orderId: id,
+          },
+          select: { id: true, quantity: true, product: true },
+        });
+
+        const updateProductPromises = orderItems.map((item) => {
+          return tx.product.update({
+            data: { quantity: item.product.quantity - item.quantity },
+            where: { id: item.product.id },
+          });
+        });
+
+        await Promise.all(updateProductPromises);
+
+        const order = await tx.order.update({
+          data: {
+            status: OrderStatus.Placed,
+          },
+          where: { id },
+          include: {
+            items: {
+              include: {
+                product: true,
+              },
+              orderBy: {
+                id: 'asc',
+              },
+            },
+          },
+        });
+
+        return order;
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
+    );
+  }
+
   async updateOrderItem(
     orderId: OrderIdentifier,
     itemId: OrderItemIdentifier,
