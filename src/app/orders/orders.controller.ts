@@ -128,6 +128,27 @@ export class OrdersController {
     return OrderDto.fromEntity(updatedOrderEntity);
   }
 
+  @Put('place/:id')
+  async placeOrder(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: UserSessionDto,
+  ) {
+    const orderEntity =
+      await this.ordersService.findOrderByUserIdWithInCartStatus(user.id);
+
+    const isOrderCart = orderEntity.id === id;
+    if (!isOrderCart) {
+      throw new InternalServerErrorException(ErrorMessage.RecordNotExists);
+    }
+
+    const updatedOrderEntity = await this.ordersService.placeOrder(id);
+    if (!updatedOrderEntity) {
+      throw new InternalServerErrorException(ErrorMessage.RecordUpdationFailed);
+    }
+
+    return OrderDto.fromEntity(updatedOrderEntity);
+  }
+
   @Put(':orderId/items/:itemId')
   async updateOrderItem(
     @Param('orderId', ParseUUIDPipe) orderId: string,
