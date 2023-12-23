@@ -30,9 +30,7 @@ export class UsersRepo {
     });
   }
 
-  async createOne(
-    user: Pick<User, 'roleId' | 'email' | 'normalizedEmail' | 'password'>,
-  ) {
+  async createOne(user: Pick<User, 'email' | 'normalizedEmail' | 'password'>) {
     return await this.prisma.user.create({
       data: { ...user },
     });
