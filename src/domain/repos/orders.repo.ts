@@ -24,24 +24,31 @@ export class OrdersRepo {
       },
     };
 
-    return await this.prisma.order.findMany({
-      skip: (pageNumber - 1) * pageSize,
-      take: pageSize,
+    const prismaQuery: Prisma.OrderFindManyArgs = {
       where: {
         userId,
         ...(excludeCart && exceptOrderWithInCartStatusCondition),
       },
+      skip: (pageNumber - 1) * pageSize,
+      take: pageSize,
       include: {
         items: {
           include: {
             product: true,
           },
-          orderBy: {
-            id: 'asc',
-          },
         },
       },
-    });
+      orderBy: {
+        updatedAt: 'desc',
+      },
+    };
+
+    const [count, orders] = await this.prisma.$transaction([
+      this.prisma.order.count({ where: prismaQuery.where }),
+      this.prisma.order.findMany(prismaQuery),
+    ]);
+
+    return { count, orders };
   }
 
   async findOrderItemByIdAndOrderId(

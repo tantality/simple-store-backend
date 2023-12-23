@@ -13,6 +13,7 @@ import { HttpStatus } from '@nestjs/common/enums';
 import { InternalServerErrorException } from '@nestjs/common/exceptions';
 import { ParseUUIDPipe } from '@nestjs/common/pipes/parse-uuid.pipe';
 import { OrderDto } from 'domain/dto/order.dto';
+import { OrdersDto } from 'domain/dto/orders.dto';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
 import { ErrorMessage } from 'enums/error-message.enum';
 import { CurrentUser } from 'libs/security/decorators/current-user.decorator';
@@ -31,12 +32,12 @@ export class OrdersController {
     @Query() query: GetUserOrdersQueryDto,
     @CurrentUser() user: UserSessionDto,
   ) {
-    const orderEntities = await this.ordersService.findAllUserOrders(
+    const ordersAndCount = await this.ordersService.findAllUserOrders(
       user.id,
       query,
     );
 
-    return OrderDto.fromEntities(orderEntities);
+    return OrdersDto.fromResponse(ordersAndCount);
   }
 
   @Get('/cart')
