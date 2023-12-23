@@ -1,11 +1,11 @@
 import { RoleTypes } from '@prisma/client';
-import { IsUUID } from 'class-validator';
+import { IsIn, IsUUID } from 'class-validator';
 
 export class UserSessionDto {
   @IsUUID()
   id: string;
 
-  @IsUUID()
+  @IsIn(Object.values(RoleTypes))
   roleType: RoleTypes;
 
   public static fromPayload(dto: UserSessionDto): UserSessionDto {
