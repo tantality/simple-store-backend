@@ -1,11 +1,12 @@
-import { IsUUID } from 'class-validator';
+import { RoleTypes } from '@prisma/client';
+import { IsIn, IsUUID } from 'class-validator';
 
 export class UserSessionDto {
   @IsUUID()
   id: string;
 
-  @IsUUID()
-  roleId: string;
+  @IsIn(Object.values(RoleTypes))
+  roleType: RoleTypes;
 
   public static fromPayload(dto: UserSessionDto): UserSessionDto {
     if (!dto) {
@@ -14,7 +15,7 @@ export class UserSessionDto {
 
     return {
       id: dto.id,
-      roleId: dto.roleId,
+      roleType: dto.roleType,
     };
   }
 }

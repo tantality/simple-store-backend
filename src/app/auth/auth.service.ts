@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { User, RoleTypes } from '@prisma/client';
+import { User } from '@prisma/client';
 import { UserSessionDto } from 'domain/dto/user-session.dto';
-import { RolesRepo } from 'domain/repos/roles.repo';
 import { UsersRepo } from 'domain/repos/users.repo';
 import { SecurityService } from 'libs/security/security.service';
 import { UserIdentifier } from 'types/model-identifiers.types';
@@ -10,7 +9,6 @@ import { UserIdentifier } from 'types/model-identifiers.types';
 export class AuthService {
   constructor(
     private usersRepo: UsersRepo,
-    private rolesRepo: RolesRepo,
     private securityService: SecurityService,
   ) {}
 
@@ -40,17 +38,11 @@ export class AuthService {
   async makeNewUser(
     user: Pick<User, 'normalizedEmail' | 'email' | 'password'>,
   ) {
-    const role = await this.rolesRepo.findOneByType(RoleTypes.User);
-    if (!role) {
-      return;
-    }
-
     const hashedPassword = await this.securityService.hashPassword(
       user.password,
     );
 
     return await this.usersRepo.createOne({
-      roleId: role.id,
       email: user.email,
       normalizedEmail: user.normalizedEmail,
       password: hashedPassword,

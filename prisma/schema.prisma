@@ -15,27 +15,9 @@ enum RoleTypes {
   User  @map("user")
 }
 
-enum UserPermissions {
-  All @map("permissions.all")
-}
-
 enum OrderStatus {
   InCart @map("in-cart")
   Placed @map("placed")
-}
-
-model Role {
-  id        String   @id @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
-
-  type        RoleTypes
-  permissions UserPermissions[]
-
-  users User[]
-
-  @@unique([type])
-  @@map("roles")
 }
 
 model User {
@@ -43,13 +25,12 @@ model User {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
 
-  email           String  @db.VarChar(256)
-  normalizedEmail String  @map("normalized_email") @db.VarChar(256)
-  password        String  @db.VarChar(256)
-  refreshToken    String? @map("refresh_token") @db.VarChar(256)
+  roleType        RoleTypes @default(User) @map("role_type")
+  email           String    @db.VarChar(256)
+  normalizedEmail String    @map("normalized_email") @db.VarChar(256)
+  password        String    @db.VarChar(256)
+  refreshToken    String?   @map("refresh_token") @db.VarChar(256)
 
-  role   Role    @relation(fields: [roleId], references: [id])
-  roleId String  @map("role_id") @db.Uuid
   orders Order[]
 
   @@unique([normalizedEmail])

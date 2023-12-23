@@ -64,7 +64,7 @@ export class AuthController {
       throw new InternalServerErrorException(ErrorMessage.UserCreationFailed);
     }
 
-    const payload = { id: newUserEntity.id, roleId: newUserEntity.roleId };
+    const payload = { id: newUserEntity.id, roleType: newUserEntity.roleType };
     const tokens = this.authService.generateTokens(payload);
 
     await this.authService.setRefreshToken(payload.id, tokens.refreshToken);
@@ -95,7 +95,7 @@ export class AuthController {
       throw new InternalServerErrorException(ErrorMessage.UserNotExists);
     }
 
-    const payload = { id: userEntity.id, roleId: userEntity.roleId };
+    const payload = { id: userEntity.id, roleType: userEntity.roleType };
     const tokens = this.authService.generateTokens(payload);
 
     await this.authService.setRefreshToken(payload.id, tokens.refreshToken);
