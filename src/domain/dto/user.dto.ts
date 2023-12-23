@@ -1,9 +1,9 @@
-import { User } from '@prisma/client';
+import { RoleTypes, User } from '@prisma/client';
 import { UUIDDto } from './uuid.dto';
 
 export class UserDto extends UUIDDto {
   email: string;
-  roleId: string;
+  roleType: RoleTypes;
 
   static fromEntity(entity?: User) {
     if (!entity) {
@@ -15,7 +15,7 @@ export class UserDto extends UUIDDto {
     it.createdAt = entity.createdAt.valueOf();
     it.updatedAt = entity.updatedAt.valueOf();
     it.email = entity.email;
-    it.roleId = entity.id;
+    it.roleType = entity.roleType;
 
     return it;
   }
