@@ -36,10 +36,10 @@ export class OrdersRepo {
           include: {
             product: true,
           },
-          orderBy: {
-            id: 'asc',
-          },
         },
+      },
+      orderBy: {
+        updatedAt: 'desc',
       },
     };
 
